@@ -37,3 +37,4 @@ jobs:
       docker-image: ${{ needs.linux-bionic-cuda11_7-py3_10-gcc7-inductor-build.outputs.docker-image }}
       test-matrix: ${{ needs.linux-bionic-cuda11_7-py3_10-gcc7-inductor-build.outputs.test-matrix }}
       use-gha: anything-non-empty-to-use-gha
+      timeout-minutes: 1200
