@@ -1,6 +1,8 @@
+
 name: Upload contribution stats
 
 on:
+  pull_request:
   schedule:
     # Choose a random time near midnight PST because it may be delayed if there are high loads
     - cron:  37 7 * * *
@@ -22,6 +24,9 @@ jobs:
         env:
           ROCKSET_API_KEY: ${{ secrets.ROCKSET_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_OSSCI_METRICS_V2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_OSSCI_METRICS_V2_SECRET_ACCESS_KEY }}
+
         run: |
-          echo "Uploading external contribution stats for $(date -v-1d +%F)"
-          python3 -m tools.stats.upload_external_contrib_stats --startDate "$(date -v-1d +%F)"
+          echo "Uploading external contribution stats for" "$(date -d yesterday '+%Y-%m-%d')"
+          python3 -m tools.stats.upload_external_contrib_stats --startDate "$(date -d yesterday '+%Y-%m-%d')"
