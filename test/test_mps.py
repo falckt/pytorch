@@ -139,7 +139,6 @@ def mps_ops_grad_modifier(ops):
     }
 
     MACOS_12_3_XFAILLIST_GRAD = {
-        'remainder': [torch.float16],
     }
 
     def addDecorator(op, d) -> None:
@@ -268,7 +267,7 @@ def mps_ops_modifier(ops):
         'square': [torch.bool, torch.int16, torch.int32, torch.int64, torch.uint8, torch.int8],
 
         # cpu not giving nan for x/0.0
-        'atan2': [torch.bool, torch.float16, torch.float32, torch.int16, torch.int32, torch.int64, torch.uint8, torch.int8],
+        'atan2': [torch.bool, torch.float16, torch.int16, torch.int32, torch.int64, torch.uint8, torch.int8],
         # fill tensors with uninitialized data, causing mismatch with CPU
         'empty_permuted': [torch.bool, torch.float16, torch.float32, torch.int16,
                            torch.int32, torch.int64, torch.uint8, torch.int8],
@@ -279,18 +278,18 @@ def mps_ops_modifier(ops):
     MACOS_BEFORE_13_3_XFAILLIST = {
         # The result of pow(9 , 8) is showing 43046716, whereas it should've been 43046721.
         # fixed in macOS 13. We are not raising error.
-        'pow': [torch.float32, torch.int16, torch.int32, torch.int64, torch.uint8, torch.int8],
-        '__rpow__': [torch.float32, torch.uint8, torch.int8],
+        'pow': [torch.float32, torch.int8],
+        '__rpow__': [torch.float32],
 
         # Failures due to precision issues (due to fast-math). These has been fixed in MacOS 13.3+
         'tan': [torch.float32],
+        'cdist': [torch.float32],
         'masked.softmin': [torch.float32],
         'masked.softmax': [torch.float32],
         'masked.log_softmax': [torch.float32],
-        'cdist': [torch.float32],
 
         # CPU Error: cpu not giving nan for x/0.0
-        'atan2': [torch.bool, torch.float16, torch.float32, torch.int16, torch.int32, torch.int64, torch.uint8, torch.int8],
+        'atan2': [torch.bool, torch.float16, torch.int16, torch.int32, torch.int64, torch.uint8, torch.int8],
     }
 
     MACOS_13_3_XFAILLIST = {
@@ -453,7 +452,6 @@ def mps_ops_modifier(ops):
         'nn.functional.rrelu': None,
         'nn.functional.softshrink': None,
         'nn.functional.norm': None,
-        'ones_like': None,
         'ormqr': None,
         'pca_lowrank': None,
         'pinverse': None,
@@ -524,7 +522,6 @@ def mps_ops_modifier(ops):
         'unique': None,
         'vdot': None,
         'view_as_complex': None,
-        'zeros_like': None,
         'segment_reduce': None,
         'segment_reduce_': None,
         '_segment_reduce_lengths': None,
@@ -556,9 +553,11 @@ def mps_ops_modifier(ops):
         # Unsupported dtypes
         # bmm is not supported for integral types
         'nn.functional.bilinear': [torch.int16, torch.int32, torch.int64, torch.uint8, torch.int8],
-        # batch_norm  Cannot convert a MPS Tensor to float64 dtype. The tensors
+        # Cannot convert a MPS Tensor to float64 dtype. The tensors
         # input data is created with double in common_methods_invocations.py
         'nn.functional.batch_norm': [torch.float32],
+        'ones_like': None,
+        'zeros_like': None,
 
         # Convolution for integral types is not supported on MPS
         'nn.functional.conv1d': [torch.int64],
@@ -566,6 +565,7 @@ def mps_ops_modifier(ops):
         'nn.functional.conv_transpose1d': [torch.int64],
         'nn.functional.conv_transpose2d': [torch.int64],
 
+        # Unsupported dtypes
         'cumsum': [torch.int64],
         'masked.cumsum': [torch.int64],
         'cumulative_trapezoid': [torch.int64],
